@@ -184,6 +184,7 @@ function show(id){
   screens.forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   if(id==='gallery'){ startHeartRain(); }
+  else { stopHeartRain(); }
   if(id==='message'){
     const last=document.getElementById('lastSurprise');
     if(last) last.classList.add('show');
@@ -194,30 +195,43 @@ function show(id){
   }
 }
 
+function spawnHeart(rain, emojis){
+  const h=document.createElement('span');
+  h.className='rain-heart';
+  h.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+  h.style.left=Math.random()*100+'vw';
+  h.style.fontSize=(14+Math.random()*22)+'px';
+  h.style.animationDuration=(5.5+Math.random()*5)+'s';
+  h.style.animationDelay=(Math.random()*0.35)+'s';
+  h.style.setProperty('--drift',((Math.random()-.5)*180)+'px');
+  h.style.setProperty('--spin',((Math.random()-.5)*50)+'deg');
+  h.addEventListener('animationend',()=>h.remove(),{once:true});
+  rain.appendChild(h);
+}
+
 function startHeartRain(){
   const rain=document.getElementById('heartRain');
   if(!rain) return;
-  rain.innerHTML='';
+  stopHeartRain();
   rain.classList.add('show');
-  const emojis=['❤️','💖','💕','💗','💘','✨'];
-  const count=85;
-  for(let i=0;i<count;i++){
-    const h=document.createElement('span');
-    h.className='rain-heart';
-    h.textContent=emojis[Math.floor(Math.random()*emojis.length)];
-    h.style.left=Math.random()*100+'vw';
-    h.style.fontSize=(14+Math.random()*22)+'px';
-    h.style.animationDuration=(5.5+Math.random()*5)+'s';
-    h.style.animationDelay=(Math.random()*2.8)+'s';
-    h.style.setProperty('--drift',((Math.random()-.5)*180)+'px');
-    h.style.setProperty('--spin',((Math.random()-.5)*50)+'deg');
-    rain.appendChild(h);
+  const emojis=['❤️','💖','💕','💗','💘','💝','✨'];
+  // Keep a romantic, continuous rain of hearts while the Images Zone is open.
+  for(let i=0;i<70;i++) spawnHeart(rain,emojis);
+  window.heartRainInterval=setInterval(()=>{
+    for(let i=0;i<12;i++) spawnHeart(rain,emojis);
+  },900);
+}
+
+function stopHeartRain(){
+  if(window.heartRainInterval){
+    clearInterval(window.heartRainInterval);
+    window.heartRainInterval=null;
   }
-  clearTimeout(window.heartRainTimer);
-  window.heartRainTimer=setTimeout(()=>{
+  const rain=document.getElementById('heartRain');
+  if(rain){
     rain.classList.remove('show');
     rain.innerHTML='';
-  },13000);
+  }
 }
 
 function check(){
@@ -440,3 +454,5 @@ function toggleMusic(){
 </script>
 </body>
 </html>
+index.html
+HTML
